@@ -53,16 +53,21 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 
 ENV CODE /code
 WORKDIR $CODE
+
+# Install dependencies
+ENV LIBUTF8PROCVERSION 1.3.1-2
+RUN wget -O libutf8proc-dev.deb http://ftp.ch.debian.org/debian/pool/main/u/utf8proc/libutf8proc-dev_${LIBUTF8PROCVERSION}_amd64.deb
+RUN wget -O libutf8proc1.deb http://ftp.ch.debian.org/debian/pool/main/u/utf8proc/libutf8proc1_${LIBUTF8PROCVERSION}_amd64.deb
+RUN dpkg --install libutf8proc1.deb libutf8proc-dev.deb
+RUN rm libutf8proc1.deb libutf8proc-dev.deb
+
+RUN apt-get clean && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y pandoc \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN git clone https://github.com/giggls/mapnik-german-l10n.git mapnik-german-l10n
 
-WORKDIR $CODE/mapnik-german-l10n/utf8translit
-RUN dpkg-buildpackage -uc -us -b
+WORKDIR $CODE/mapnik-german-l10n
 
-WORKDIR $CODE/mapnik-german-l10n/kanjitranslit
-RUN dpkg-buildpackage -uc -us -b
-
-WORKDIR $CODE/mapnik-german-l10n/
-RUN dpkg --install *utf8translit_*.deb
-RUN dpkg --install *kanjitranslit_*.deb
-
-RUN chmod a+rx $CODE
+RUN make && make install && make clean
