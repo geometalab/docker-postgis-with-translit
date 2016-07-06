@@ -38,11 +38,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     binutils \
     libgeoip1 \
     \
-    python-pip \
-    python3-pip \
-    ipython \
     libicu-dev \
-    ipython3 \
     debhelper \
     \
     libkakasi2-dev\
@@ -54,6 +50,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
 ENV CODE /code
 WORKDIR $CODE
 RUN git clone https://github.com/giggls/mapnik-german-l10n.git mapnik-german-l10n
+
+WORKDIR $CODE/mapnik-german-l10n/
+RUN git checkout -b old 937424a0ac6dc5e1dc9fa5a77be492b96f45f309
 
 WORKDIR $CODE/mapnik-german-l10n/utf8translit
 RUN dpkg-buildpackage -uc -us -b
