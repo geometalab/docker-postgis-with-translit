@@ -24,6 +24,10 @@ RUN wget -O libutf8proc-dev.deb http://ftp.ch.debian.org/debian/pool/main/u/utf8
   && dpkg --install libutf8proc1.deb libutf8proc-dev.deb \
   && rm libutf8proc1.deb libutf8proc-dev.deb
 
+COPY country_osm_grid.sql /code/country_osm_grid.sql
+
 RUN git clone https://github.com/giggls/mapnik-german-l10n.git mapnik-german-l10n \
-    && cd mapnik-german-l10n && git checkout v2.2.6 \
+    && cd mapnik-german-l10n \
+    && cp /code/country_osm_grid.sql . \
+    && git checkout v2.2.6 \
     && make && make install && make clean
